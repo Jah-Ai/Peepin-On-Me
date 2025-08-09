@@ -9,18 +9,35 @@ readarray -t IPs < <(ip addr show | grep 'inet ' | awk '{print $2}')
 readarray -t MACs < <(ip addr show | grep 'ether ' | awk '{print $2}')
 
 
-function list_allArrays() {
+
+
+function list_allArrays() {	# Display Intf + Ips + MACs
 	
 	for ((i = 0; i <${#Intf[@]}; i++)); do # Loop the Intf Array for length - Display all 3
 		echo $i - ${Intf[i]} - ${MACs[i]} - ${IPs[i]}
 	done
 }
 
-function scan_SinInt() {
+function scan_SinInt() {	# Working on While loop 
 	echo "Singular Interface"
 
 	echo "Here are your options:"
 	list_allArrays
+	read n_option
+
+	#echo $n_option - return right output so assignment of array may be incorrect look below
+	#considering do while - no definative loop length known
+	
+	#Checked n rreturns right index
+	while [[ $n_option -ge 0 && $n_option -lt ${#Intf[@]} ]]; do	#check while n_option in range of length > 0 
+		echo "nmap ${IPs[$n_option]}"	#nmap command being displayed
+		nmap ${IPs[$n_option]}	#nmap command being run
+
+		#	command to logically match -
+		list_allArrays
+		read n_option
+	done 
+
 
 } 
 
