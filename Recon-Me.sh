@@ -8,12 +8,28 @@ readarray -t Intf < <(ip addr show | grep '^[0-9]: ' | awk '{print $2}' | cut -d
 readarray -t IPs < <(ip addr show | grep 'inet ' | awk '{print $2}')
 readarray -t MACs < <(ip addr show | grep 'ether ' | awk '{print $2}')
 
+
+function list_allArrays() {
+	
+	for ((i = 0; i <${#Intf[@]}; i++)); do # Loop the Intf Array for length - Display all 3
+		echo $i - ${Intf[i]} - ${MACs[i]} - ${IPs[i]}
+	done
+}
+
 function scan_SinInt() {
 	echo "Singular Interface"
+
+	echo "Here are your options:"
+	list_allArrays
+
 } 
 
 function scan_AllInt() {
 	echo "Multiple Interfaces"
+
+	echo "All the following Interfaces will be Scanned"
+	list_allArrays
+
 }
 
 function q_specific_ip() {	#Question if ! n or y; GoodBye
