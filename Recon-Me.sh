@@ -18,7 +18,7 @@ function list_allArrays() {	# Display Intf + Ips + MACs
 	done
 }
 
-function scan_SinInt() {	# Working on While loop 
+function scan_SinInt() {	# 1 - n_option string validation + input validation for array i.e. Check if array[weewoo] - returns index 0 by def (odd) 
 	echo "Singular Interface"
 
 	echo "Here are your options:"
@@ -28,7 +28,11 @@ function scan_SinInt() {	# Working on While loop
 	#echo $n_option - return right output so assignment of array may be incorrect look below
 	#considering do while - no definative loop length known
 	
-	#Checked n rreturns right index
+	#Test return of length Array_Intf
+	echo "intf length" ${#Intf[@]} 
+
+	#Validation not complete in do while - will be handled before - assume n_options[weewoo] returns index 0 by def
+
 	while [[ $n_option -ge 0 && $n_option -lt ${#Intf[@]} ]]; do	#check while n_option in range of length > 0 
 		echo "nmap ${IPs[$n_option]}"	#nmap command being displayed
 		nmap ${IPs[$n_option]}	#nmap command being run
@@ -41,13 +45,26 @@ function scan_SinInt() {	# Working on While loop
 
 } 
 
-function scan_AllInt() {
+function scan_AllInt() {	# All Intf before nmap lists name + MACs + IPs 
 	echo "Multiple Interfaces"
 
 	echo "All the following Interfaces will be Scanned"
+	echo "OPTION - INTERFACE - MAC Addr - IP Addr"	# Formatting
+	echo ""		# Formatting
 	list_allArrays
 
+	for ((i = 0; i <${#IPs[@]}; i++)); do
+		echo "OPTION :" $i
+		echo "Interface :" ${Intf[i]}
+		echo "MAC Address :" ${MACs[i]}
+		echo "Nmap Starting :" ${IPs[i]}
+		nmap ${IPs[$i]}
+		echo "Host "$i" Complete"
+		echo "######################################"
+
+	done
 }
+
 
 function q_specific_ip() {	#Question if ! n or y; GoodBye
 	echo "Would you like to scan all your interfaces(y OR n): "
@@ -69,7 +86,7 @@ function q_specific_ip() {	#Question if ! n or y; GoodBye
 
 
 q_specific_ip
-echo ${Intf[0]}
+
 
 echo ${IPs[0]}
 for ((i = 0; i <${#IPs[@]}; i++)); do
