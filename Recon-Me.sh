@@ -10,7 +10,6 @@ readarray -t MACs < <(ip addr show | grep 'ether ' | awk '{print $2}')
 
 
 
-
 function list_allArrays() {	# Display Intf + Ips + MACs
 	
 	for ((i = 0; i <${#Intf[@]}; i++)); do # Loop the Intf Array for length - Display all 3
@@ -18,7 +17,7 @@ function list_allArrays() {	# Display Intf + Ips + MACs
 	done
 }
 
-function scan_SinInt() {	# 1 - n_option string validation + input validation for array i.e. Check if array[weewoo] - returns index 0 by def (odd) 
+function scan_SinInt() {	# 1 - n_option string validation + input validation for array i.e. Check if array[weewoo] - returns index 0 by def (odd) - OS Detection code included 
 	echo "Singular Interface"
 
 	echo "Here are your options:"
@@ -36,6 +35,24 @@ function scan_SinInt() {	# 1 - n_option string validation + input validation for
 	while [[ $n_option -ge 0 && $n_option -lt ${#Intf[@]} ]]; do	#check while n_option in range of length > 0 
 		echo "nmap ${IPs[$n_option]}"	#nmap command being displayed
 		nmap ${IPs[$n_option]}	#nmap command being run
+
+		#	This is where the OS Detection will go - for loop here with index
+		echo "Would you like to proceed with OS Detection(ROOT Access Required"
+		echo "Type y - yes | n - no :"
+		read q_OS
+
+		#nmap print def to 127 loopback - def addr
+		local upper_OS="${q_OS^^}"
+		if [[ "$upper_OS" = "Y" ]]; then
+			echo "OS Detection --- "${IPs[$n_option]}
+			sudo nmap ${IPs[$n_option]} -O
+		elif [[ "$upper_OS" = "N" ]]; then
+			echo "Undertood ... Halted OS Detection"
+			q_specific_ip
+		else
+			echo "This Input was invalid"
+			q_specific_ip
+		fi
 
 		#	command to logically match -
 		list_allArrays
@@ -75,6 +92,8 @@ function q_specific_ip() {	#Question if ! n or y; GoodBye
 	if [[ "$upper_bs" = "Y" ]]; then
 		echo "Scan of all interfaces is underway!"
 		scan_AllInt
+
+		check_OSdetection	#Requires root (will prompt + run command)
 	elif [[ "$upper_bs" = "N" ]]; then
 		echo "Scan of a specific Interface is underway"
 		scan_SinInt
